@@ -1,0 +1,176 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
+import Alarm, {removeAlarm, scheduleAlarm, updateAlarm} from '../alarm';
+import TextInput from '../components/TextInput';
+import DayPicker from '../components/DayPicker';
+import TimePicker from '../components/TimePicker';
+import Button from '../components/Button';
+import {globalStyles} from '../global';
+import SwitcherInput from '../components/SwitcherInput';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import RNFS from 'react-native-fs';
+
+export default function ({route, navigation}) {
+  const [alarm, setAlarm] = useState(null);
+  const [mode, setMode] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
+
+  useEffect(() => {
+    if (route.params && route.params.alarm) {
+      setAlarm(new Alarm(route.params.alarm));
+      setMode('EDIT');
+      console.log('alarm is on create :', route.params.alarm);
+      if (route.params.alarm.uri != null) {
+        setImageUri(route.params.alarm.uri);
+      }
+    } else {
+      setAlarm(new Alarm());
+      setMode('CREATE');
+    }
+  }, []);
+
+  function update(updates) {
+    const a = Object.assign({}, alarm);
+    for (let u of updates) {
+      a[u[0]] = u[1];
+    }
+    setAlarm(a);
+  }
+
+  async function onSave(obj) {
+    if (mode === 'EDIT') {
+      alarm.active = true;
+      await updateAlarm(alarm);
+    }
+    if (mode === 'CREATE') {
+      await scheduleAlarm(alarm);
+      console.log('created alarm: ', JSON.stringify(alarm));
+    }
+    navigation.goBack();
+  }
+
+  async function onDelete() {
+    await removeAlarm(alarm.uid);
+    navigation.goBack();
+  }
+
+  async function takePhoto() {
+    const result = await launchCamera();
+
+    if (result) {
+      setImageUri(result.assets[0].uri);
+      console.log('result', result);
+      console.log('uri', result.assets[0].uri);
+      console.log('imageUri', imageUri);
+      await savePhotoToHiddenFolder(result.assets[0].originalPath);
+    }
+  }
+
+  const savePhotoToHiddenFolder = async photoUri => {
+    try {
+      // Create a hidden directory in your app's documents folder
+      const hiddenDirPath = `${RNFS.DocumentDirectoryPath}/.hidden_photos`;
+      await RNFS.mkdir(hiddenDirPath);
+
+      // Get the photo's filename from the URI
+      const photoFileName = photoUri.substring(photoUri.lastIndexOf('/') + 1);
+
+      // Construct the destination path for the hidden photo
+      const destinationPath = `${hiddenDirPath}/${photoFileName}`;
+
+      // Move the photo from its current location to the hidden folder
+      await RNFS.moveFile(photoUri, destinationPath);
+
+      // Optionally, you can delete the original file if you don't need it anymore
+
+      // If you want to access the hidden photo in your app, you can use 'destinationPath'
+
+      // If you want to hide it from the Camera Roll, you can use CameraRoll's 'deletePhotos' function
+      // await CameraRoll.deletePhotos([photoUri]);
+
+      console.log('Photo saved to hidden folder:', destinationPath);
+      alarm.uri = 'file://' + destinationPath;
+    } catch (error) {
+      console.error('Error saving photo:', error);
+    }
+  };
+
+  if (!alarm) {
+    return <View />;
+  }
+
+  return (
+    <View style={globalStyles.container}>
+      <View style={[globalStyles.innerContainer, styles.container]}>
+        <TouchableOpacity onPress={takePhoto}>
+          <Text>Photo</Text>
+          <Image
+            source={
+              imageUri ? {uri: imageUri} : require('../assets/DefaultImage.png')
+            }
+            style={{width: 200, height: 200}}
+            onError={error => {
+              console.log(error);
+            }}
+          />
+        </TouchableOpacity>
+        <View styles={styles.inputsContainer}>
+          <TimePicker
+            onChange={(h, m) =>
+              update([
+                ['hour', h],
+                ['minutes', m],
+              ])
+            }
+            hour={alarm.hour}
+            minutes={alarm.minutes}
+          />
+          <TextInput
+            description={'Title'}
+            style={styles.textInput}
+            onChangeText={v => update([['title', v]])}
+            value={alarm.title}
+          />
+          <TextInput
+            description={'Description'}
+            style={styles.textInput}
+            onChangeText={v => update([['description', v]])}
+            value={alarm.description}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          {mode === 'EDIT' && <Button onPress={onDelete} title={'Delete'} />}
+          <Button fill={true} onPress={onSave} title={'Save'} />
+          <Button
+            fill={true}
+            onPress={() => {
+              setAlarm(alarm);
+              // navigation.navigate('Edit-2', {alarm: alarm, mode: mode})
+              navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
+            }}
+            title={'To Second'}
+          />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: '100%',
+  },
+  inputsContainer: {
+    width: '100%',
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+});
