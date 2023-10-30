@@ -37,6 +37,12 @@ public class AlarmDates {
         return alarmUid + postfix;
     }
 
+    static long toUnixTimeStamp(Date date){
+        return date.getTime() / 1000;
+
+    }
+
+
     public int getNotificationId (Date date) {
         for (int i = 0; i < dates.length; i++) {
             if (dates[i].equals(date)) {

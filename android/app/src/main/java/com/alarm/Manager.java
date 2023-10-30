@@ -57,7 +57,7 @@ public class Manager {
             Storage.saveDates(context, dates);
             for (Date date : dates.getDates()) {
                 Helper.scheduleAlarm(context, alarm.uid, date.getTime(), dates.getNotificationId(date));
-                Log.d(TAG, "rescheduling alarm: " + alarm.uid +" | NewDate: " + date.getTime());
+                Log.w(TAG, "rescheduling alarm: " + alarm.uid +" | NewDate: " + date.getTime());
             }
         }
     }
@@ -149,10 +149,15 @@ public class Manager {
             Date current = dates.getCurrentDate();
             Log.w(TAG,"current date is "+current);
             Log.w(TAG,"current alarm is "+alarm);
+            Log.w(TAG,"old date to unixTimeStamp: "+AlarmDates.toUnixTimeStamp(current));
+
 
             Date updated = AlarmDates.setNextTime(current,alarm);
             dates.update(current, updated);
+            Log.w(TAG,"new date to unixTimeStamp: "+AlarmDates.toUnixTimeStamp(updated));
+
             Storage.saveDates(context, dates);
+            Log.w(TAG,"dates to update: "+AlarmDates.toJson(dates));
             Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), dates.getCurrentNotificationId());
         } else {
             alarm.active = false;
