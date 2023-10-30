@@ -82,7 +82,7 @@ class Storage {
         return context.getSharedPreferences(fileKey, Context.MODE_PRIVATE);
     }
 
-    public void updateAlarmTimes(Context context, String key, int oldTime, int newTime) {
+    public static void updateAlarmTimes(Context context, String key, int oldTime, int newTime) {
         // Step 1: Retrieve existing shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences(context);
 

@@ -157,6 +157,7 @@ public class Manager {
             Log.w(TAG,"new date to unixTimeStamp: "+AlarmDates.toUnixTimeStamp(updated));
 
             Storage.saveDates(context, dates);
+            Storage.updateAlarmTimes(context,alarm.uid,(int)AlarmDates.toUnixTimeStamp(current),(int)AlarmDates.toUnixTimeStamp(updated));
             Log.w(TAG,"dates to update: "+AlarmDates.toJson(dates));
             Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), dates.getCurrentNotificationId());
         } else {
