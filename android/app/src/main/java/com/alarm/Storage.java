@@ -92,7 +92,7 @@ class Storage {
             return;
         }
 
-        Gson gson = new Gson();
+
         Alarm alarm = Alarm.fromJson(json);
 
         for (int i = 0; i < alarm.times.size(); i++) {

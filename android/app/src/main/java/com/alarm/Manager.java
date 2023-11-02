@@ -5,6 +5,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -51,6 +52,24 @@ public class Manager {
 
     public static void reschedule(Context context) {
         Alarm[] alarms = Storage.getAllAlarms(context);
+
+        for(Alarm alarm : alarms){
+            ArrayList<Integer> times = alarm.times;
+            for(int time : times ){
+                Log.w(TAG,"times Item : "+time + " now timeStamp: " +(int) AlarmDates.toUnixTimeStamp(new Date()) );
+                if(time < (int)AlarmDates.toUnixTimeStamp(new Date()) ){
+                    Log.w(TAG,"found old passed Alarm: "+ time +" now time is: "+ (int)AlarmDates.toUnixTimeStamp(new Date()));
+                    int newTime = time ;
+                    while (newTime < (int)AlarmDates.toUnixTimeStamp(new Date())){
+                        newTime = (int)AlarmDates.toUnixTimeStamp(AlarmDates.setNextTime(new Date((long)newTime * 1000),alarm)) ;
+                    }
+                    Log.w(TAG,"old time: "+time +" " + " new time: "+ newTime );
+                    Storage.updateAlarmTimes(context,alarm.uid,time,newTime);
+                }
+            }
+
+        }
+
         for (Alarm alarm : alarms) {
             Storage.removeDates(context, alarm.uid);
             AlarmDates dates = alarm.getAlarmDates();
