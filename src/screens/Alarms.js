@@ -31,7 +31,7 @@ export default function ({navigation}) {
 
   return (
     <View>
-      <View>
+      <View style={globalStyles.alarmsContainer}>
         {alarms && alarms.length === 0 && <Text>No alarms</Text>}
         <ScrollView>
           {alarms &&

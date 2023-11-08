@@ -37,7 +37,7 @@ public class AlarmDates {
         return alarmUid + postfix;
     }
 
-    static long toUnixTimeStamp(Date date){
+    public static long toUnixTimeStamp(Date date){
         return date.getTime() / 1000;
 
     }

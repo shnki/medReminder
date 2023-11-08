@@ -31,7 +31,11 @@ class Helper {
     static void scheduleAlarm(Context context, String alarmUid, long triggerAtMillis, int notificationID) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
+        long unixTime = triggerAtMillis / 1000L;
+
         intent.putExtra("ALARM_UID", alarmUid);
+        intent.putExtra("UNIX_TIME_STAMP", unixTime);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
                 notificationID,
@@ -46,7 +50,9 @@ class Helper {
             alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
         }
         Log.d(TAG, "SDK version: " + Build.VERSION.SDK_INT);
-        Log.d(TAG, "scheduling alarm with notification id: " + notificationID);
+        Log.d(TAG, "triggerAtMillis: "+triggerAtMillis);
+
+        Log.d(TAG, "scheduling alarm with notification id: " + unixTime);
         Log.d(TAG, "alarm scheduled to fire in " + (((float)(triggerAtMillis - System.currentTimeMillis())) / (1000 * 60)) + "min");
     }
 

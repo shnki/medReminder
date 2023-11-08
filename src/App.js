@@ -24,7 +24,7 @@ export default function () {
           component={Home}
           options={params => ({
             ...headerStyles,
-            title: 'Alarms',
+            title: 'Reminders',
             headerRight: () => (
               <AddButton
                 title={'+ '}

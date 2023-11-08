@@ -3,7 +3,7 @@ import React from 'react';
 import {TextInput, View, StyleSheet, Text} from 'react-native';
 import {colors} from '../global';
 
-export default function ({onChangeText, value, description}) {
+export default function ({onChangeText, value, description, placeholder}) {
   return (
     <View style={styles.container}>
       <View style={styles.descriptionContainer}>
@@ -13,6 +13,7 @@ export default function ({onChangeText, value, description}) {
         style={styles.textInput}
         onChangeText={onChangeText}
         value={value}
+        placeholder={placeholder}
       />
     </View>
   );
@@ -29,7 +30,9 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 5,
     paddingBottom: 5,
+    color: colors.BLACK,
     borderColor: colors.GREY,
+    backgroundColor: colors.GREY,
     fontWeight: 'bold',
   },
   descriptionContainer: {
@@ -38,6 +41,6 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontWeight: 'bold',
-    color: colors.BLUE,
+    color: colors.BLACK,
   },
 });

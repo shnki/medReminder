@@ -6,12 +6,16 @@ import DayPicker from '../components/DayPicker';
 import TimePicker from '../components/TimePicker';
 import XDayPicker from '../components/XDayPicker';
 import Button from '../components/Button';
-import {globalStyles} from '../global';
+import {colors, globalStyles} from '../global';
 import SwitcherInput from '../components/SwitcherInput';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import RNFS from 'react-native-fs';
 import SelectDropdown from 'react-native-select-dropdown';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
@@ -88,68 +92,100 @@ export default function ({route, navigation}) {
     return <View />;
   }
   return (
-    <View>
-      <Text>How often</Text>
-      <SelectDropdown
-        defaultValue={often[alarm.often]}
-        data={often}
-        onSelect={(selectedItem, index) => {
-          update([['often', index]]);
-          if (selectedItem === 'Specific Days of the week') {
-            setDaysPickerVisible(true);
-          } else {
-            setDaysPickerVisible(false);
-          }
-          if (selectedItem === 'Every X Days') {
-            setXDayPickerVisible(true);
-          } else {
-            setXDayPickerVisible(false);
-          }
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          return <Text style={{color: 'red'}}>{selectedItem}</Text>;
-        }}
-        rowTextForSelection={(item, index) => {
-          return item;
-        }}
-      />
-      {isDaysPickerVisible && (
-        <DayPicker
-          activeDays={alarm.days}
-          onChange={newDays => update([['days', newDays]])}
+    <View style={globalStyles.periodicSelectContainer}>
+      <View style={styles.oftenContainer}>
+        <Text style={globalStyles.title}>How often</Text>
+        <SelectDropdown
+          buttonStyle={{
+            width: wp('90%'),
+            height: hp('10%'),
+            backgroundColor: colors.GREY,
+            borderRadius: 10,
+          }}
+          defaultValue={often[alarm.often]}
+          data={often}
+          onSelect={(selectedItem, index) => {
+            update([['often', index]]);
+            if (selectedItem === 'Specific Days of the week') {
+              setDaysPickerVisible(true);
+            } else {
+              setDaysPickerVisible(false);
+            }
+            if (selectedItem === 'Every X Days') {
+              setXDayPickerVisible(true);
+            } else {
+              setXDayPickerVisible(false);
+            }
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            return (
+              <Text style={{color: colors.SLATE_BLUE}}>{selectedItem}</Text>
+            );
+          }}
+          rowTextForSelection={(item, index) => {
+            return item;
+          }}
         />
-      )}
-      {isXDayPickerVisible && (
-        <XDayPicker
-          defaultValue={alarm.often}
-          minValue={3}
-          maxValue={32}
-          onChange={XDays => update([['often', XDays]])}
-        />
-      )}
-      <Text>How Many Times</Text>
+        {isDaysPickerVisible && (
+          <DayPicker
+            activeDays={alarm.days}
+            onChange={newDays => update([['days', newDays]])}
+          />
+        )}
+        {isXDayPickerVisible && (
+          <XDayPicker
+            defaultValue={alarm.often}
+            minValue={3}
+            maxValue={32}
+            onChange={XDays => update([['often', XDays]])}
+          />
+        )}
+      </View>
 
-      <SelectDropdown
-        defaultValue={alarm.many}
-        data={howManyTimes}
-        onSelect={(selectedItem, index) => {
-          update([['many', selectedItem]]);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          return <Text style={{color: 'red'}}>{selectedItem}</Text>;
-        }}
-        rowTextForSelection={(item, index) => {
-          return item;
-        }}
-      />
-      <Text>{JSON.stringify(alarm)}</Text>
+      <View style={styles.manyContainer}>
+        <Text style={globalStyles.title}>How Many Times</Text>
+
+        <SelectDropdown
+          buttonStyle={{
+            width: wp('90%'),
+            height: hp('10%'),
+            backgroundColor: colors.GREY,
+            borderRadius: 10,
+          }}
+          defaultValue={alarm.many}
+          data={howManyTimes}
+          onSelect={(selectedItem, index) => {
+            update([['many', selectedItem]]);
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            return (
+              <Text style={{color: colors.SLATE_BLUE}}>{selectedItem}</Text>
+            );
+          }}
+          rowTextForSelection={(item, index) => {
+            return item;
+          }}
+        />
+      </View>
       <Button
         fill={true}
         onPress={() =>
           navigation.navigate('Edit-3', {alarm: alarm, mode: mode})
         }
-        title={'To Edit-3'}
+        title={'NEXT'}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  oftenContainer: {
+    height: hp('40%'),
+    width: wp('90%'),
+    alignContent: 'center',
+  },
+  manyContainer: {
+    height: hp('30%'),
+    width: wp('90%'),
+  },
+});

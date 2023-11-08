@@ -76,9 +76,11 @@ function getDay(number) {
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 5,
     marginBottom: 5,
+    paddingVertical: 10,
   },
   innerContainer: {
     display: 'flex',

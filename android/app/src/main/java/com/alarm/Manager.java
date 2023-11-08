@@ -50,7 +50,7 @@ public class Manager {
         });
     }
 
-    public static void reschedule(Context context) {
+    public static void  reschedule(Context context) {
         Alarm[] alarms = Storage.getAllAlarms(context);
 
         for(Alarm alarm : alarms){

@@ -4,14 +4,15 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text, Image} from 'react-native';
 import Alarm, {removeAlarm, scheduleAlarm, updateAlarm} from '../alarm';
 import TextInput from '../components/TextInput';
-import DayPicker from '../components/DayPicker';
-import TimePicker from '../components/TimePicker';
 import Button from '../components/Button';
 import {globalStyles} from '../global';
-import SwitcherInput from '../components/SwitcherInput';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import RNFS from 'react-native-fs';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
@@ -59,7 +60,6 @@ export default function ({route, navigation}) {
 
   async function takePhoto() {
     const result = await launchCamera();
-
     if (result) {
       setImageUri(result.assets[0].uri);
       console.log('result', result);
@@ -106,44 +106,37 @@ export default function ({route, navigation}) {
     <View style={globalStyles.container}>
       <View style={[globalStyles.innerContainer, styles.container]}>
         <TouchableOpacity onPress={takePhoto}>
-          <Text>Photo</Text>
           <Image
             source={
               imageUri ? {uri: imageUri} : require('../assets/DefaultImage.png')
             }
-            style={{width: 200, height: 200}}
+            style={{width: wp('70%'), height: hp('40%')}}
             onError={error => {
               console.log(error);
             }}
           />
         </TouchableOpacity>
         <View styles={styles.inputsContainer}>
-          <TimePicker
-            onChange={(h, m) =>
-              update([
-                ['hour', h],
-                ['minutes', m],
-              ])
-            }
-            hour={alarm.hour}
-            minutes={alarm.minutes}
-          />
           <TextInput
-            description={'Title'}
+            description={'Name of Medication'}
             style={styles.textInput}
             onChangeText={v => update([['title', v]])}
-            value={alarm.title}
+            value={alarm.title ?? alarm.title}
+            placeholder={'Name of Medication'}
           />
           <TextInput
             description={'Description'}
             style={styles.textInput}
             onChangeText={v => update([['description', v]])}
-            value={alarm.description}
+            value={alarm.description ?? alarm.description}
+            placeholder={'Write a description to show what you are taking'}
           />
         </View>
         <View style={styles.buttonContainer}>
           {mode === 'EDIT' && <Button onPress={onDelete} title={'Delete'} />}
-          <Button fill={true} onPress={onSave} title={'Save'} />
+          {mode === 'EDIT' && (
+            <Button fill={true} onPress={onSave} title={'Save'} />
+          )}
           <Button
             fill={true}
             onPress={() => {
@@ -151,7 +144,7 @@ export default function ({route, navigation}) {
               // navigation.navigate('Edit-2', {alarm: alarm, mode: mode})
               navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
             }}
-            title={'To Second'}
+            title={'NEXT'}
           />
         </View>
       </View>

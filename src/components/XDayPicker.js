@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 
 export default function ({minValue, maxValue, defaultValue, onChange}) {
@@ -19,14 +19,25 @@ export default function ({minValue, maxValue, defaultValue, onChange}) {
   };
 
   return (
-    <View>
-      <Text>Select a number:</Text>
+    <View style={styles.container}>
+      <Text>Every</Text>
       <Picker
-        style={{width: 200, height: 150}}
+        style={{width: 100, height: 150}}
         selectedValue={selectedValue}
         onValueChange={onValueChange}>
         {renderPickerItems()}
       </Picker>
+      <Text>days</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

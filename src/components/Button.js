@@ -27,20 +27,21 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     borderWidth: 2,
-    borderColor: colors.BLUE,
-    borderRadius: 25,
+    borderColor: colors.SLATE_BLUE,
+    borderRadius: 10,
   },
   fillContainer: {
-    backgroundColor: colors.BLUE,
+    backgroundColor: colors.GREY,
   },
   normalContainer: {
     backgroundColor: 'transparent',
   },
   buttonText: {
     fontWeight: 'bold',
+    color: colors.BLACK,
   },
   fillText: {
-    color: 'white',
+    color: colors.BLACK,
   },
   normalText: {
     color: colors.BLUE,

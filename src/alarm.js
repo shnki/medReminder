@@ -107,8 +107,8 @@ export default class Alarm {
   constructor(params = null) {
     this.uid = getParam(params, 'uid', uuidv4());
     this.enabled = getParam(params, 'enabled', true);
-    this.title = getParam(params, 'title', 'Alarm');
-    this.description = getParam(params, 'description', 'Wake up');
+    this.title = getParam(params, 'title', '');
+    this.description = getParam(params, 'description', '');
     this.hour = getParam(params, 'hour', new Date().getHours());
     this.minutes = getParam(params, 'minutes', new Date().getMinutes() + 1);
     this.snoozeInterval = getParam(params, 'snoozeInterval', 1);

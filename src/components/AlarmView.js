@@ -32,14 +32,14 @@ export default function ({
       {text: 'OK', onPress: () => console.log('OK Pressed')},
     ]);
   return (
-    <TouchableOpacity onPress={() => onPress(uid)} style={styles.container}>
+    <TouchableOpacity onPress={createTwoButtonAlert} style={styles.container}>
       <View style={styles.leftInnerContainer}>
         <Text style={styles.clock}>{title}</Text>
         {times.map((t, i) => (
           <Text key={i}>{t}</Text>
         ))}
 
-        <Button fill={true} onPress={createTwoButtonAlert} title={'Edit'} />
+        <Button fill={true} onPress={() => onPress(uid)} title={'Edit'} />
         <View style={styles.descContainer}>
           <Text>{getAlphabeticalDays(days)}</Text>
         </View>

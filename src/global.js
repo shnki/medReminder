@@ -2,8 +2,10 @@
 import {StyleSheet} from 'react-native';
 
 export const colors = {
-  GREY: '#d0d5dc',
+  GREY: '#D9D9D9',
   BLUE: '#1992fe',
+  BLACK: '#000000',
+  SLATE_BLUE: '#804FCF',
 };
 
 export const globalStyles = StyleSheet.create({
@@ -20,5 +22,21 @@ export const globalStyles = StyleSheet.create({
     height: '90%',
     display: 'flex',
     alignItems: 'center',
+  },
+
+  alarmsContainer: {
+    padding: 10,
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: colors.BLACK,
+  },
+  periodicSelectContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
   },
 });
