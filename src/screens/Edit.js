@@ -1,7 +1,14 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  KeyboardAvoidingView,
+  Keyboard,
+} from 'react-native';
 import Alarm, {removeAlarm, scheduleAlarm, updateAlarm} from '../alarm';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
@@ -18,6 +25,7 @@ export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
   const [mode, setMode] = useState(null);
   const [imageUri, setImageUri] = useState(null);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
     if (route.params && route.params.alarm) {
@@ -31,6 +39,13 @@ export default function ({route, navigation}) {
       setAlarm(new Alarm());
       setMode('CREATE');
     }
+
+    Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
   }, []);
 
   function update(updates) {
@@ -106,15 +121,19 @@ export default function ({route, navigation}) {
     <View style={globalStyles.container}>
       <View style={[globalStyles.innerContainer, styles.container]}>
         <TouchableOpacity onPress={takePhoto}>
-          <Image
-            source={
-              imageUri ? {uri: imageUri} : require('../assets/DefaultImage.png')
-            }
-            style={{width: wp('70%'), height: hp('40%')}}
-            onError={error => {
-              console.log(error);
-            }}
-          />
+          {!isKeyboardVisible && (
+            <Image
+              source={
+                imageUri
+                  ? {uri: imageUri}
+                  : require('../assets/DefaultImage.png')
+              }
+              style={{width: wp('70%'), height: hp('40%')}}
+              onError={error => {
+                console.log(error);
+              }}
+            />
+          )}
         </TouchableOpacity>
         <View styles={styles.inputsContainer}>
           <TextInput
@@ -132,21 +151,23 @@ export default function ({route, navigation}) {
             placeholder={'Write a description to show what you are taking'}
           />
         </View>
-        <View style={styles.buttonContainer}>
-          {mode === 'EDIT' && <Button onPress={onDelete} title={'Delete'} />}
-          {mode === 'EDIT' && (
-            <Button fill={true} onPress={onSave} title={'Save'} />
-          )}
-          <Button
-            fill={true}
-            onPress={() => {
-              setAlarm(alarm);
-              // navigation.navigate('Edit-2', {alarm: alarm, mode: mode})
-              navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
-            }}
-            title={'NEXT'}
-          />
-        </View>
+        {!isKeyboardVisible && (
+          <View style={styles.buttonContainer}>
+            {mode === 'EDIT' && <Button onPress={onDelete} title={'Delete'} />}
+            {mode === 'EDIT' && (
+              <Button fill={true} onPress={onSave} title={'Save'} />
+            )}
+            <Button
+              fill={true}
+              onPress={() => {
+                setAlarm(alarm);
+                // navigation.navigate('Edit-2', {alarm: alarm, mode: mode})
+                navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
+              }}
+              title={'NEXT'}
+            />
+          </View>
+        )}
       </View>
     </View>
   );

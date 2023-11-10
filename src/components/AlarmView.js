@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {colors} from '../global';
 import Button from '../components/Button';
+import {getHourFromTimestamp, getMinuteFromTimestamp} from '../utils';
 
 export default function ({
   times,
@@ -21,9 +22,22 @@ export default function ({
   onPress,
   isActive,
   onChange,
+  often,
+  many,
 }) {
+  function m(arr) {
+    let message = '';
+    for (let i = 0; i < arr.length; i++) {
+      message +=
+        getHourFromTimestamp(arr[i]) +
+        ':' +
+        getMinuteFromTimestamp(arr[i]) +
+        ' \n';
+    }
+    return message;
+  }
   const createTwoButtonAlert = () =>
-    Alert.alert('Alert Title', uid, [
+    Alert.alert(`${title} is set to ring on these times`, m(times), [
       {
         text: uid,
         onPress: () => console.log('Cancel Pressed'),
@@ -35,6 +49,7 @@ export default function ({
     <TouchableOpacity onPress={createTwoButtonAlert} style={styles.container}>
       <View style={styles.leftInnerContainer}>
         <Text style={styles.clock}>{title}</Text>
+        <Text>{``}</Text>
         {times.map((t, i) => (
           <Text key={i}>{t}</Text>
         ))}

@@ -38,6 +38,8 @@ export default function ({navigation}) {
             alarms.map(a => (
               <AlarmView
                 times={a.times}
+                often={a.often}
+                many={a.many}
                 key={a.uid}
                 uid={a.uid}
                 onChange={async active => {

@@ -78,16 +78,6 @@ export default function ({route, navigation}) {
     return Math.floor(nextTime.getTime() / 1000);
   }
 
-  function getHourFromTimestamp(timestamp) {
-    const date = new Date(timestamp * 1000);
-    return date.getHours();
-  }
-
-  function getMinuteFromTimestamp(timestamp) {
-    const date = new Date(timestamp * 1000);
-    return date.getMinutes();
-  }
-
   if (!alarm) {
     return <View />;
   }
