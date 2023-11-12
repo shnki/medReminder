@@ -29,7 +29,9 @@ export default function ({
     let message = '';
     for (let i = 0; i < arr.length; i++) {
       message +=
-        getHourFromTimestamp(arr[i]) +
+        (getHourFromTimestamp(arr[i]) < 10
+          ? '0' + getHourFromTimestamp(arr[i])
+          : getHourFromTimestamp(arr[i])) +
         ':' +
         getMinuteFromTimestamp(arr[i]) +
         ' \n';

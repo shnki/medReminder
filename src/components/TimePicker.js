@@ -1,59 +1,39 @@
-/* eslint-disable prettier/prettier */
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import DatePicker from 'react-native-date-picker';
 
-export default function ({hour, minutes, onChange = () => null}) {
-  const [showPicker, setShowPicker] = useState(false);
+export default ({hour, minutes, onChange = () => null}) => {
+  const d = new Date();
+  d.setHours(hour);
+  d.setMinutes(minutes);
+  const [date, setDate] = useState(d);
+  const [open, setOpen] = useState(false);
 
   return (
-    <View>
-      <TouchableOpacity
-        style={styles.container}
-        onPress={() => setShowPicker(true)}>
+    <>
+      <TouchableOpacity style={styles.container} onPress={() => setOpen(true)}>
         <Text style={styles.clockText}>
-          {hour < 10 ? '0' + hour : hour}:
-          {minutes < 10 ? '0' + minutes : minutes}
+          {date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:
+          {date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}
         </Text>
       </TouchableOpacity>
-      {showPicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          timeZoneOffsetInMinutes={0}
-          value={getDate(hour, minutes)}
-          mode={'time'}
-          is24Hour={true}
-          display="spinner"
-          onChange={(e, date) => {
-            setShowPicker(false);
-            onChange(isoGetHour(date), isoGetMinute(date));
-          }}
-        />
-      )}
-    </View>
+      <DatePicker
+        modal
+        open={open}
+        date={date}
+        mode="time"
+        onConfirm={date => {
+          setOpen(false);
+          setDate(date);
+          onChange(date.getHours(), date.getMinutes());
+        }}
+        onCancel={() => {
+          setOpen(false);
+        }}
+      />
+    </>
   );
-}
-
-function getDate(hour, minutes) {
-  const date = new Date();
-  date.setHours(hour);
-  date.setMinutes(minutes);
-  return date;
-}
-function iso8601ToUnixTimestamp(iso8601) {
-  const date = new Date(iso8601);
-  return Math.floor(date.getTime() / 1000);
-}
-
-function isoGetHour(iso) {
-  const dateObj = new Date(iso);
-  return dateObj.getUTCHours();
-}
-
-function isoGetMinute(iso) {
-  const dateObj = new Date(iso);
-  return dateObj.getUTCMinutes();
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -63,7 +43,7 @@ const styles = StyleSheet.create({
   },
   clockText: {
     color: 'black',
-    fontWeight: 'bold',
     fontSize: 70,
+    fontFamily: 'DS-DIGIT',
   },
 });

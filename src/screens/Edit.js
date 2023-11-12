@@ -4,17 +4,16 @@ import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Image,
-  KeyboardAvoidingView,
   Keyboard,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Alarm, {removeAlarm, scheduleAlarm, updateAlarm} from '../alarm';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import {globalStyles} from '../global';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import RNFS from 'react-native-fs';
 import {
   widthPercentageToDP as wp,
@@ -74,13 +73,42 @@ export default function ({route, navigation}) {
   }
 
   async function takePhoto() {
-    const result = await launchCamera();
+    const result = await launchCamera({mediaType: 'photo'});
     if (result) {
       setImageUri(result.assets[0].uri);
       console.log('result', result);
       console.log('uri', result.assets[0].uri);
       console.log('imageUri', imageUri);
       await savePhotoToHiddenFolder(result.assets[0].originalPath);
+    }
+  }
+
+  const createTwoButtonAlert = () =>
+    Alert.alert(
+      `Use an image of your medication`,
+      'Choose an option to proceed',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Pick Photo From Gallery',
+          onPress: () => choosePhoto(),
+        },
+        {text: 'Take Photo Using Camera', onPress: () => takePhoto()},
+      ],
+    );
+
+  async function choosePhoto() {
+    const result = await launchImageLibrary({mediaType: 'photo'});
+    if (result) {
+      setImageUri(result.assets[0].uri);
+      console.log('result', result);
+      console.log('uri', result.assets[0].uri);
+      console.log('imageUri', imageUri);
+      await savePhotoToHiddenFolder(result.assets[0].uri);
     }
   }
 
@@ -120,7 +148,7 @@ export default function ({route, navigation}) {
   return (
     <View style={globalStyles.container}>
       <View style={[globalStyles.innerContainer, styles.container]}>
-        <TouchableOpacity onPress={takePhoto}>
+        <TouchableOpacity onPress={createTwoButtonAlert}>
           {!isKeyboardVisible && (
             <Image
               source={
@@ -139,7 +167,9 @@ export default function ({route, navigation}) {
           <TextInput
             description={'Name of Medication'}
             style={styles.textInput}
-            onChangeText={v => update([['title', v]])}
+            onChangeText={v => {
+              update([['title', v]]);
+            }}
             value={alarm.title ?? alarm.title}
             placeholder={'Name of Medication'}
           />
@@ -161,8 +191,11 @@ export default function ({route, navigation}) {
               fill={true}
               onPress={() => {
                 setAlarm(alarm);
-                // navigation.navigate('Edit-2', {alarm: alarm, mode: mode})
-                navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
+                if (alarm.title.trim() !== '') {
+                  navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
+                } else {
+                  alert('Please enter a name for your medication');
+                }
               }}
               title={'NEXT'}
             />

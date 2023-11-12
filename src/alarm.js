@@ -119,8 +119,12 @@ export default class Alarm {
     this.times = getParam(params, 'times', [1697836200, 1697836380]);
     this.often = getParam(params, 'often', 0);
     this.many = getParam(params, 'many', 'Once a day');
-    this.initialHour = getParam(params, 'initialHour', 15);
-    this.initialMinute = getParam(params, 'initialMinute', 44);
+    this.initialHour = getParam(
+      params,
+      'initialHour',
+      new Date().getHours() + 1,
+    );
+    this.initialMinute = getParam(params, 'initialMinute', 0);
   }
 
   static getEmpty() {

@@ -1,17 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
-import Alarm, {removeAlarm, scheduleAlarm, updateAlarm} from '../alarm';
-import TextInput from '../components/TextInput';
-import DayPicker from '../components/DayPicker';
-import TimePicker from '../components/TimePicker';
+import {View} from 'react-native';
+import Alarm, {scheduleAlarm, updateAlarm} from '../alarm';
 import Button from '../components/Button';
-import {globalStyles} from '../global';
-import SwitcherInput from '../components/SwitcherInput';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import RNFS from 'react-native-fs';
-import SelectDropdown from 'react-native-select-dropdown';
-import {getTimestamp} from 'react-native-reanimated/lib/reanimated2/core';
+import TimePicker from '../components/timePicker';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
