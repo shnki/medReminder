@@ -1,5 +1,8 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {Dimensions} from 'react-native';
+
 import {
   StyleSheet,
   Switch,
@@ -47,16 +50,17 @@ export default function ({
       },
       {text: 'OK', onPress: () => console.log('OK Pressed')},
     ]);
+  const {width} = Dimensions.get('window');
+  const editIconSize = width / 10;
+
   return (
     <TouchableOpacity onPress={createTwoButtonAlert} style={styles.container}>
       <View style={styles.leftInnerContainer}>
         <Text style={styles.clock}>{title}</Text>
-        <Text>{``}</Text>
         {times.map((t, i) => (
           <Text key={i}>{t}</Text>
         ))}
 
-        <Button fill={true} onPress={() => onPress(uid)} title={'Edit'} />
         <View style={styles.descContainer}>
           <Text>{getAlphabeticalDays(days)}</Text>
         </View>
@@ -67,6 +71,12 @@ export default function ({
           trackColor={{false: colors.GREY, true: colors.BLUE}}
           value={isActive}
           onValueChange={onChange}
+        />
+        <Icon
+          name="edit"
+          size={editIconSize}
+          onPress={() => onPress(uid)}
+          color={colors.SLATE_BLUE}
         />
       </View>
     </TouchableOpacity>
@@ -93,10 +103,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   rightInnerContainer: {
+    flexDirection: 'row-reverse',
     margin: 5,
     marginRight: 0,
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   descContainer: {
     flexDirection: 'row',

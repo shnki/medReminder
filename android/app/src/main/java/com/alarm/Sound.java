@@ -23,6 +23,9 @@ class Sound {
     private AudioManager audioManager;
     private int userVolume;
     private MediaPlayer mediaPlayer;
+
+    private MediaPlayer mediaPlayer2;
+
     private Vibrator vibrator;
 
     private Context context;
@@ -43,11 +46,10 @@ class Sound {
 
     void stop() {
         try {
-            if (mediaPlayer.isPlaying()) {
                 stopSound();
                 stopVibration();
-                mediaPlayer.release();
-            }
+
+
         } catch (IllegalStateException e) {
             Log.d(TAG, "Sound has probably been released already");
         }
@@ -55,13 +57,38 @@ class Sound {
 
     private void playSound(Uri soundUri) {
         try {
+         int resId = context.getResources().getIdentifier("test", "raw", context.getPackageName());
+           Uri  _soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + resId);
             if (!mediaPlayer.isPlaying()) {
-                mediaPlayer.setScreenOnWhilePlaying(true);
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+                mediaPlayer = new MediaPlayer();
                 mediaPlayer.setDataSource(context, soundUri);
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
                 mediaPlayer.setVolume(100, 100);
-                mediaPlayer.setLooping(true);
-                mediaPlayer.prepare();
+             //   mediaPlayer.setLooping(true);
+                mediaPlayer.prepareAsync();
+
+                mediaPlayer2 = new MediaPlayer();
+                mediaPlayer2.setDataSource(context, _soundUri);
+                mediaPlayer2.setAudioStreamType(AudioManager.STREAM_ALARM);
+                mediaPlayer2.setVolume(100, 100);
+              //  mediaPlayer2.setLooping(true);
+                mediaPlayer2.prepareAsync();
+
+
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mediaPlayer2.start();
+                    }
+                });
+
+                mediaPlayer2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mediaPlayer.start();
+                    }
+                });
+
                 mediaPlayer.start();
             }
         } catch (Exception e) {
@@ -73,8 +100,17 @@ class Sound {
         try {
             // reset the volume to what it was before we changed it.
             audioManager.setStreamVolume(AudioManager.STREAM_ALARM, userVolume, AudioManager.FLAG_PLAY_SOUND);
-            mediaPlayer.stop();
-            mediaPlayer.reset();
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+            if (mediaPlayer2 != null) {
+                mediaPlayer2.stop();
+                mediaPlayer2.release();
+                mediaPlayer2 = null;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "ringtone: " + e.getMessage());

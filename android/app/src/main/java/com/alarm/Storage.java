@@ -25,7 +25,8 @@ class Storage {
 
     static void saveDates(Context context, AlarmDates dates) {
         SharedPreferences.Editor editor = getEditor(context);
-        Log.d (TAG, "Shared preferences before saving: " + getSharedPreferences (context).getAll ()); editor.apply ();
+        Log.d (TAG, "Shared preferences before saving: " + getSharedPreferences (context).getAll ());
+        editor.apply ();
         editor.putString(dates.uid, AlarmDates.toJson(dates));
         editor.apply();
         Log.d (TAG, "Shared preferences after saving: " + getSharedPreferences (context).getAll ());

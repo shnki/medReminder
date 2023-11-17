@@ -90,7 +90,7 @@ public class AlarmDates {
         return calendar.getTime();
     }
 
-    private static int getTodaysDayNumber(){
+    private static int getTodayDayNumber(){
         Calendar calendar = Calendar.getInstance();
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
         return  dayOfWeek ;
@@ -101,7 +101,7 @@ public class AlarmDates {
     }
 
     private static int getNextSpaceDay(int[] days) {
-        int today = getTodaysDayNumber();
+        int today = getTodayDayNumber();
         for (int i = 0; i < days.length; i++) {
             if (isLastElement(days, today)) {
                 return (days[0] + 7) - today;

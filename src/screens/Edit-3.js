@@ -3,6 +3,8 @@ import {View, Text} from 'react-native';
 import Alarm from '../alarm';
 import Button from '../components/Button';
 import TimePicker from '../components/timePicker';
+import {colors, globalStyles} from '../global';
+
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
   const [mode, setMode] = useState(null);
@@ -52,7 +54,7 @@ export default function ({route, navigation}) {
   date.setMinutes(alarm.initialMinute);
   return (
     <View>
-      <Text>When Do You Want To Start</Text>
+      <Text style={globalStyles.title}>When you want to start ?</Text>
 
       <TimePicker
         hour={alarm.initialHour}

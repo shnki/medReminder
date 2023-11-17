@@ -16,6 +16,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void set (ReadableMap details, Promise promise) {
+    public void set (ReadableMap details, Promise promise) throws IOException {
         Alarm alarm = parseAlarmObject(reactContext, details);
         Manager.schedule(reactContext, alarm);
         promise.resolve(null);

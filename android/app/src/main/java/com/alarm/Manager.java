@@ -4,6 +4,9 @@ import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
+import android.content.SharedPreferences;
+
+import com.rnalarm.R;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +19,7 @@ public class Manager {
     private static Sound sound;
     private static String activeAlarmUid;
     private static  TextToSpeech mTts;
+
 
     static String getActiveAlarm() {
         return activeAlarmUid;
@@ -165,20 +169,20 @@ public class Manager {
         Alarm alarm = Storage.getAlarm(context, activeAlarmUid);
         AlarmDates dates = Storage.getDates(context, activeAlarmUid);
         if (alarm.repeating) {
+            Log.d (TAG, "Shared preferences before saving: " + getSharedPreferences (context).getAll ());
             Date current = dates.getCurrentDate();
             Log.w(TAG,"current date is "+current);
             Log.w(TAG,"current alarm is "+alarm);
             Log.w(TAG,"old date to unixTimeStamp: "+AlarmDates.toUnixTimeStamp(current));
-
-
             Date updated = AlarmDates.setNextTime(current,alarm);
             dates.update(current, updated);
             Log.w(TAG,"new date to unixTimeStamp: "+AlarmDates.toUnixTimeStamp(updated));
-
             Storage.saveDates(context, dates);
             Storage.updateAlarmTimes(context,alarm.uid,(int)AlarmDates.toUnixTimeStamp(current),(int)AlarmDates.toUnixTimeStamp(updated));
             Log.w(TAG,"dates to update: "+AlarmDates.toJson(dates));
             Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), dates.getCurrentNotificationId());
+            Log.d (TAG, "Shared preferences after saving: " + getSharedPreferences (context).getAll ());
+
         } else {
             alarm.active = false;
             Storage.saveAlarm(context, alarm);
@@ -198,6 +202,10 @@ public class Manager {
         Storage.saveDates(context, dates);
         Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), dates.getCurrentNotificationId());
         activeAlarmUid = null;
+    }
+    private static SharedPreferences getSharedPreferences(Context context) {
+        String fileKey = context.getResources().getString(R.string.notification_channel_id);
+        return context.getSharedPreferences(fileKey, Context.MODE_PRIVATE);
     }
 
 }
