@@ -39,4 +39,11 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
   },
+  initialTimeContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: 10,
+  },
 });

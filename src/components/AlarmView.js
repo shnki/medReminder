@@ -68,7 +68,7 @@ export default function ({
       <View style={styles.rightInnerContainer}>
         <Switch
           ios_backgroundColor={'black'}
-          trackColor={{false: colors.GREY, true: colors.BLUE}}
+          trackColor={{false: colors.GREY, true: colors.SLATE_BLUE}}
           value={isActive}
           onValueChange={onChange}
         />

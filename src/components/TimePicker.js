@@ -18,6 +18,7 @@ export default ({hour, minutes, onChange = () => null}) => {
         </Text>
       </TouchableOpacity>
       <DatePicker
+        theme="light"
         modal
         open={open}
         date={date}

@@ -93,6 +93,9 @@ export default function ({route, navigation}) {
       setMode(route.params.mode);
       console.log('alarm in edit-4 :', route.params.alarm);
       console.log('mode in edit-4:', route.params.mode);
+      navigation.setOptions({
+        title: route.params.mode,
+      });
       const times = getHowManyTimesNum(route.params.alarm.many);
       setTempTimes(
         generateAlarmTimes(
@@ -123,11 +126,6 @@ export default function ({route, navigation}) {
           minutes={t.minutes}
         />
       ))}
-      {/* <TimePicker
-        onChange={(h, m) => console.log(getNextTimeTimeStamp(h, m))}
-        hour={alarm.hour}
-        minutes={alarm.minutes}
-      /> */}
 
       <Button
         fill={true}

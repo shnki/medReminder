@@ -1,9 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import Alarm from '../alarm';
 import Button from '../components/Button';
 import TimePicker from '../components/timePicker';
 import {colors, globalStyles} from '../global';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
@@ -37,8 +41,9 @@ export default function ({route, navigation}) {
     if (route.params && route.params.alarm) {
       setAlarm(route.params.alarm);
       setMode(route.params.mode);
-      console.log('alarm in edit-3 :', route.params.alarm);
-      console.log('mode in edit-3 :', route.params.mode);
+      navigation.setOptions({
+        title: route.params.mode,
+      });
     } else {
       setAlarm(new Alarm());
       setMode('CREATE');
@@ -53,32 +58,44 @@ export default function ({route, navigation}) {
   date.setHours(alarm.initialHour);
   date.setMinutes(alarm.initialMinute);
   return (
-    <View>
-      <Text style={globalStyles.title}>When you want to start ?</Text>
+    <View style={globalStyles.initialTimeContainer}>
+      <View style={globalStyles.timePickerContainer}>
+        <Text style={globalStyles.title}>When you want to start ?</Text>
 
-      <TimePicker
-        hour={alarm.initialHour}
-        minutes={alarm.initialMinute}
-        onChange={(h, m) =>
-          update([
-            ['initialHour', h],
-            ['initialMinute', m],
-          ])
-        }
-      />
-
-      <Button
-        fill={true}
-        onPress={() => console.log(JSON.stringify(alarm))}
-        title={'print alarm'}
-      />
-      <Button
-        fill={true}
-        onPress={() =>
-          navigation.navigate('Edit-4', {alarm: alarm, mode: mode})
-        }
-        title={'go to edit-4'}
-      />
+        <TimePicker
+          hour={alarm.initialHour}
+          minutes={alarm.initialMinute}
+          onChange={(h, m) =>
+            update([
+              ['initialHour', h],
+              ['initialMinute', m],
+            ])
+          }
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          fill={true}
+          onPress={() =>
+            navigation.navigate('Edit-4', {alarm: alarm, mode: mode})
+          }
+          title={'Next'}
+        />
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  timePickerContainer: {
+    height: hp('50%'),
+    width: wp('90%'),
+    alignContent: 'center',
+  },
+  buttonContainer: {
+    height: hp('40%'),
+    width: wp('40%'),
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+});

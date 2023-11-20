@@ -88,17 +88,19 @@ public class Manager {
     static void update(Context context, Alarm alarm) {
         AlarmDates prevDates = Storage.getDates(context, alarm.uid);
         AlarmDates dates = alarm.getAlarmDates();
-        createSoundFile(context,alarm);
+        if (prevDates != null) {
+            for (Date date : prevDates.getDates()) {
+                Helper.cancelAlarm(context, prevDates.getNotificationId(date));
+            }
+        }
+        createSoundFile(context, alarm);
         for (Date date : dates.getDates()) {
             Helper.scheduleAlarm(context, alarm.uid, date.getTime(), dates.getNotificationId(date));
         }
         Storage.saveAlarm(context, alarm);
         Storage.saveDates(context, dates);
-        if (prevDates == null) return;
-        for (Date date : prevDates.getDates()) {
-            Helper.cancelAlarm(context, dates.getNotificationId(date));
-        }
     }
+
 
     static void removeAll(Context context) {
         Alarm[] alarms = Storage.getAllAlarms(context);

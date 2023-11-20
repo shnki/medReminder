@@ -36,6 +36,9 @@ export default function ({route, navigation}) {
       setMode(route.params.mode);
       console.log('alarm in edit-2 :', route.params.alarm);
       console.log('mode in edit-2 :', route.params.mode);
+      navigation.setOptions({
+        title: route.params.mode,
+      });
       if (route.params.alarm.often === 2) {
         setDaysPickerVisible(true);
       }
@@ -55,21 +58,6 @@ export default function ({route, navigation}) {
     }
     setAlarm(a);
     console.log('updated alarm: ', JSON.stringify(a));
-  }
-
-  function getNextTimeTimeStamp(hour, minute) {
-    const now = new Date();
-    const nextTime = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      hour,
-      minute,
-    );
-    if (nextTime < now) {
-      nextTime.setDate(nextTime.getDate() + 1);
-    }
-    return Math.floor(nextTime.getTime() / 1000);
   }
 
   if (!alarm) {

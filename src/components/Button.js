@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {colors} from '../global';
 
-export default function ({onPress, title, fill = false}) {
+export default function CustomButton({onPress, title, fill = false}) {
   return (
     <TouchableOpacity
       style={[
@@ -12,10 +12,15 @@ export default function ({onPress, title, fill = false}) {
       ]}
       onPress={onPress}
       underlayColor="#fff">
-      <Text
-        style={[styles.buttonText, fill ? styles.fillText : styles.normalText]}>
-        {title}
-      </Text>
+      <View style={styles.buttonWrapper}>
+        <Text
+          style={[
+            styles.buttonText,
+            fill ? styles.fillText : styles.normalText,
+          ]}>
+          {title}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -29,12 +34,17 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.SLATE_BLUE,
     borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   fillContainer: {
     backgroundColor: colors.GREY,
   },
   normalContainer: {
     backgroundColor: 'transparent',
+  },
+  buttonWrapper: {
+    textAlign: 'center',
   },
   buttonText: {
     fontWeight: 'bold',
