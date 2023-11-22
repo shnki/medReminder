@@ -8,8 +8,11 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {useTranslation} from 'react-i18next';
 
 export default function ({route, navigation}) {
+  const {t, i18n} = useTranslation();
+
   const [alarm, setAlarm] = useState(null);
   const [mode, setMode] = useState(null);
 
@@ -41,9 +44,12 @@ export default function ({route, navigation}) {
     if (route.params && route.params.alarm) {
       setAlarm(route.params.alarm);
       setMode(route.params.mode);
-      navigation.setOptions({
-        title: route.params.mode,
-      });
+      if (route.params.mode === 'EDIT') {
+        navigation.setOptions({title: t('Edit reminder')});
+      }
+      if (route.params.mode === 'CREATE') {
+        navigation.setOptions({title: t('Add Reminder')});
+      }
     } else {
       setAlarm(new Alarm());
       setMode('CREATE');
@@ -60,7 +66,7 @@ export default function ({route, navigation}) {
   return (
     <View style={globalStyles.initialTimeContainer}>
       <View style={globalStyles.timePickerContainer}>
-        <Text style={globalStyles.title}>When you want to start ?</Text>
+        <Text style={globalStyles.title}>{t('When you want to start ?')}</Text>
 
         <TimePicker
           hour={alarm.initialHour}
@@ -79,7 +85,7 @@ export default function ({route, navigation}) {
           onPress={() =>
             navigation.navigate('Edit-4', {alarm: alarm, mode: mode})
           }
-          title={'Next'}
+          title={t('NEXT')}
         />
       </View>
     </View>

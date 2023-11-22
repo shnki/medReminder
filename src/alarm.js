@@ -116,7 +116,7 @@ export default class Alarm {
     this.active = getParam(params, 'active', true);
     this.days = getParam(params, 'days', []);
     this.uri = getParam(params, 'uri', null);
-    this.times = getParam(params, 'times', [1697836200, 1697836380]);
+    this.times = getParam(params, 'times', []);
     this.often = getParam(params, 'often', 0);
     this.many = getParam(params, 'many', 'Once a day');
     this.initialHour = getParam(

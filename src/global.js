@@ -27,6 +27,7 @@ export const globalStyles = StyleSheet.create({
   alarmsContainer: {
     padding: 10,
   },
+
   title: {
     fontWeight: 'bold',
     fontSize: 20,

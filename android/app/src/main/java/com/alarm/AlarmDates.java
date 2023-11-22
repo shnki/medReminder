@@ -156,6 +156,8 @@ public class AlarmDates {
 
     public void update (Date old, Date updated) {
         for (int i = 0; i < dates.length; i++) {
+            Log.d(TAG,"date in the dates array "+dates[i] +" value to replace with  : "+updated);
+
             if (dates[i].equals(old)) {
                 Log.d(TAG,"update in AlarmDates.java- found OldDate: "+dates[i] +"replaced with: "+updated);
                 dates[i] = updated;

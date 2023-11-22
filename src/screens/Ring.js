@@ -5,6 +5,11 @@ import {StyleSheet, Text, View, Image} from 'react-native';
 import {getAlarm, snoozeAlarm, stopAlarm} from '../alarm';
 import Button from '../components/Button';
 import {colors, globalStyles} from '../global';
+import {useTranslation} from 'react-i18next';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 import {} from 'react-native';
 
@@ -12,6 +17,7 @@ export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
   const nowHour = new Date().getHours();
   const nowMinutes = new Date().getMinutes();
+  const {t} = useTranslation();
 
   useEffect(() => {
     const alarmUid = route.params.alarmUid;
@@ -36,7 +42,7 @@ export default function ({route, navigation}) {
           <Text style={styles.title}>{alarm.title}</Text>
           <Image
             source={{uri: alarm.uri}}
-            style={{width: 200, height: 200}}
+            style={{width: wp('80%'), height: wp('80%')}}
             onError={error => {
               console.log(error);
             }}
@@ -44,14 +50,14 @@ export default function ({route, navigation}) {
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            title={'Snooze'}
+            title={t('Snooze')}
             onPress={async () => {
               await snoozeAlarm();
               navigation.goBack();
             }}
           />
           <Button
-            title={'Stop'}
+            title={t('Stop')}
             onPress={async () => {
               await stopAlarm();
               navigation.goBack();
@@ -86,6 +92,6 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 20,
-    color: colors.GREY,
+    color: 'black',
   },
 });

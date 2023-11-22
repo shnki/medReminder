@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, Modal, TouchableOpacity} from 'react-native';
+import {useTranslation} from 'react-i18next';
+
 export default function ({
   isVisible,
   onClose,
@@ -8,6 +10,7 @@ export default function ({
   optionTwoText,
   onOption2Press,
 }) {
+  const {t, i18n} = useTranslation();
   return (
     <Modal
       visible={isVisible}
@@ -28,7 +31,7 @@ export default function ({
             borderRadius: 10,
             alignItems: 'center',
           }}>
-          <Text style={{marginBottom: 20}}>Choose an option:</Text>
+          <Text style={{marginBottom: 20}}>{t('Choose an option')}</Text>
           <TouchableOpacity
             style={{
               padding: 10,
@@ -45,7 +48,7 @@ export default function ({
             <Text>{optionTwoText}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{padding: 10}} onPress={onClose}>
-            <Text style={{color: 'blue'}}>Cancel</Text>
+            <Text style={{color: 'blue'}}>{t('Cancel')}</Text>
           </TouchableOpacity>
         </View>
       </View>

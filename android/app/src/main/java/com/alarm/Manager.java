@@ -31,7 +31,7 @@ public class Manager {
 
         for (Date date : dates.getDates()) {
             Helper.scheduleAlarm(context, alarm.uid, date.getTime(), dates.getNotificationId(date));
-            Log.d(TAG,"this the time "+date.getTime());
+            Log.d(TAG,"date passed to schedule Method: " + date.getTime());
         }
         Storage.saveAlarm(context, alarm);
         Storage.saveDates(context, dates);
@@ -170,26 +170,18 @@ public class Manager {
         sound.stop();
         Alarm alarm = Storage.getAlarm(context, activeAlarmUid);
         AlarmDates dates = Storage.getDates(context, activeAlarmUid);
-        if (alarm.repeating) {
-            Log.d (TAG, "Shared preferences before saving: " + getSharedPreferences (context).getAll ());
             Date current = dates.getCurrentDate();
-            Log.w(TAG,"current date is "+current);
-            Log.w(TAG,"current alarm is "+alarm);
-            Log.w(TAG,"old date to unixTimeStamp: "+AlarmDates.toUnixTimeStamp(current));
+            Log.w(TAG,"dates of the ringing alarm :"+ dates.getDates());
+            Log.w(TAG,"current ringing date :"+ current);
+
             Date updated = AlarmDates.setNextTime(current,alarm);
             dates.update(current, updated);
-            Log.w(TAG,"new date to unixTimeStamp: "+AlarmDates.toUnixTimeStamp(updated));
             Storage.saveDates(context, dates);
             Storage.updateAlarmTimes(context,alarm.uid,(int)AlarmDates.toUnixTimeStamp(current),(int)AlarmDates.toUnixTimeStamp(updated));
-            Log.w(TAG,"dates to update: "+AlarmDates.toJson(dates));
             Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), dates.getCurrentNotificationId());
-            Log.d (TAG, "Shared preferences after saving: " + getSharedPreferences (context).getAll ());
 
-        } else {
-            alarm.active = false;
-            Storage.saveAlarm(context, alarm);
-            Storage.removeDates(context, activeAlarmUid);
-        }
+
+
         activeAlarmUid = null;
     }
 

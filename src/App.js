@@ -4,6 +4,7 @@ import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {useTranslation} from 'react-i18next';
 
 import Home from './screens/Alarms';
 import Settings from './screens/Edit';
@@ -16,6 +17,8 @@ import rtlTransition from './navConfig';
 const Stack = createStackNavigator();
 
 export default function () {
+  const {t, i18n} = useTranslation();
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -24,7 +27,7 @@ export default function () {
           component={Home}
           options={params => ({
             ...headerStyles,
-            title: 'Reminders',
+            title: t('Reminders'),
             headerRight: () => (
               <AddButton
                 title={'+ '}

@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
+import '../i18n';
+import {useTranslation} from 'react-i18next';
 import {
   StyleSheet,
   View,
@@ -19,6 +21,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ImagePickerOverlay from '../components/ImagePickerOverlay';
+import {color} from 'react-native-reanimated';
+import {colors} from 'react-native-elements';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
@@ -27,6 +31,7 @@ export default function ({route, navigation}) {
   const [showOverlay, setShowOverlay] = useState(false);
 
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const {t} = useTranslation();
 
   useEffect(() => {
     let keyboardDidShowListener;
@@ -34,7 +39,7 @@ export default function ({route, navigation}) {
     if (route.params && route.params.alarm) {
       setAlarm(new Alarm(route.params.alarm));
       setMode('EDIT');
-      navigation.setOptions({title: 'EDIT'});
+      navigation.setOptions({title: t('Edit reminder')});
       console.log('alarm is on create :', route.params.alarm);
       if (route.params.alarm.uri != null) {
         setImageUri(route.params.alarm.uri);
@@ -42,7 +47,7 @@ export default function ({route, navigation}) {
     } else {
       setAlarm(new Alarm());
       setMode('CREATE');
-      navigation.setOptions({title: 'CREATE'});
+      navigation.setOptions({title: t('Add Reminder')});
     }
 
     keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
@@ -115,8 +120,7 @@ export default function ({route, navigation}) {
       const photoFileName = photoUri.substring(photoUri.lastIndexOf('/') + 1);
       const destinationPath = `${hiddenDirPath}/${photoFileName}`;
       await RNFS.moveFile(actualUri, destinationPath);
-      setImageUri('file://' + destinationPath); // Update imageUri directly here
-
+      setImageUri('file://' + destinationPath);
       const updatedAlarm = {...alarm, uri: 'file://' + destinationPath};
       setAlarm(updatedAlarm);
     } catch (error) {
@@ -135,8 +139,8 @@ export default function ({route, navigation}) {
         onClose={() => setShowOverlay(false)}
         onOption1Press={handleOption1}
         onOption2Press={handleOption2}
-        optionOneText={'Pick Photo From Gallery'}
-        optionTwoText={'Take Photo Using Camera'}
+        optionOneText={t('Pick Photo From Gallery')}
+        optionTwoText={t('Take Photo Using Camera')}
       />
       <View style={[globalStyles.innerContainer, styles.container]}>
         <TouchableOpacity onPress={() => setShowOverlay(true)}>
@@ -158,27 +162,27 @@ export default function ({route, navigation}) {
         </TouchableOpacity>
         <View styles={styles.inputsContainer}>
           <TextInput
-            description={'Name of Medication'}
-            style={styles.textInput}
+            description={t('Name of Medication')}
             onChangeText={v => {
               update([['title', v]]);
             }}
             value={alarm.title ?? alarm.title}
-            placeholder={'Name of Medication'}
+            placeholder={t('Name of Medication')}
           />
           <TextInput
-            description={'Description'}
-            style={styles.textInput}
+            description={t('Description')}
             onChangeText={v => update([['description', v]])}
             value={alarm.description ?? alarm.description}
-            placeholder={'Write a description to show what you are taking'}
+            placeholder={t('Write a description to show what you are taking')}
           />
         </View>
         {!isKeyboardVisible && (
           <View style={styles.buttonContainer}>
-            {mode === 'EDIT' && <Button onPress={onDelete} title={'Delete'} />}
             {mode === 'EDIT' && (
-              <Button fill={true} onPress={onSave} title={'Save'} />
+              <Button onPress={onDelete} title={t('Delete')} />
+            )}
+            {mode === 'EDIT' && (
+              <Button fill={true} onPress={onSave} title={t('Save')} />
             )}
             <Button
               fill={true}
@@ -187,10 +191,10 @@ export default function ({route, navigation}) {
                 if (alarm.title.trim() !== '') {
                   navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
                 } else {
-                  alert('Please enter a name for your medication');
+                  alert(t('Please enter a name for your medication'));
                 }
               }}
-              title={'NEXT'}
+              title={t('NEXT')}
             />
           </View>
         )}
@@ -204,9 +208,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     height: '100%',
-  },
-  inputsContainer: {
-    width: '100%',
   },
   buttonContainer: {
     display: 'flex',

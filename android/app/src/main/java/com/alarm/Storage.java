@@ -26,7 +26,6 @@ class Storage {
     static void saveDates(Context context, AlarmDates dates) {
         SharedPreferences.Editor editor = getEditor(context);
         Log.d (TAG, "Shared preferences before saving: " + getSharedPreferences (context).getAll ());
-        editor.apply ();
         editor.putString(dates.uid, AlarmDates.toJson(dates));
         editor.apply();
         Log.d (TAG, "Shared preferences after saving: " + getSharedPreferences (context).getAll ());
@@ -86,7 +85,7 @@ class Storage {
     public static void updateAlarmTimes(Context context, String key, int oldTime, int newTime) {
         // Step 1: Retrieve existing shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences(context);
-
+        Log.d (TAG, "Shared preferences in updatedAlarmsTime: " + getSharedPreferences (context).getAll ());
         String json = sharedPreferences.getString(key, null);
         if (json == null) {
             Log.w(TAG,"the alarm not found");
@@ -108,6 +107,8 @@ class Storage {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, updatedJson);
         editor.apply();
+        Log.d (TAG, "Shared preferences after update in updatedAlarmsTime: " + getSharedPreferences (context).getAll ());
+
     }
 
 
