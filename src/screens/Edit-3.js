@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import Alarm from '../alarm';
+import Tp from '../components/TimePicker';
 import Button from '../components/Button';
-import TimePicker from '../components/timePicker';
+// import TimePicker from '../components/TimePicker';
 import {colors, globalStyles} from '../global';
 import {
   widthPercentageToDP as wp,
@@ -67,8 +68,7 @@ export default function ({route, navigation}) {
     <View style={globalStyles.initialTimeContainer}>
       <View style={globalStyles.timePickerContainer}>
         <Text style={globalStyles.title}>{t('When you want to start ?')}</Text>
-
-        <TimePicker
+        <Tp
           hour={alarm.initialHour}
           minutes={alarm.initialMinute}
           onChange={(h, m) =>

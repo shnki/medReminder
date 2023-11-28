@@ -2,7 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import Alarm, {scheduleAlarm, updateAlarm} from '../alarm';
 import Button from '../components/Button';
-import TimePicker from '../components/timePicker';
+import Tp from '../components/TimePicker';
+// import TimePicker from '../components/timePicker';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
@@ -161,7 +162,7 @@ export default function ({route, navigation}) {
   return (
     <View>
       {tempTimes.map((t, i) => (
-        <TimePicker
+        <Tp
           key={i}
           onChange={(h, m) => {
             tempTimes[i] = {hour: h, minutes: m};
@@ -172,24 +173,6 @@ export default function ({route, navigation}) {
         />
       ))}
 
-      <Button
-        fill={true}
-        onPress={() => {
-          const newTimes = [];
-
-          for (let i = 0; i < tempTimes.length; i++) {
-            console.log(
-              `this tempTimes from button ${JSON.stringify(tempTimes)}`,
-            );
-            newTimes.push(
-              getNextTimeTimeStamp(tempTimes[i].hour, tempTimes[i].minutes),
-            );
-          }
-          update([['times', newTimes]]);
-          console.log(JSON.stringify(alarm.times));
-        }}
-        title={'add times to alarmObj times'}
-      />
       <Button fill={true} onPress={update} title={'Save'} />
     </View>
   );

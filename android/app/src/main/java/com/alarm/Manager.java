@@ -176,9 +176,14 @@ public class Manager {
 
             Date updated = AlarmDates.setNextTime(current,alarm);
             dates.update(current, updated);
-            Storage.saveDates(context, dates);
+
             Storage.updateAlarmTimes(context,alarm.uid,(int)AlarmDates.toUnixTimeStamp(current),(int)AlarmDates.toUnixTimeStamp(updated));
-            Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), dates.getCurrentNotificationId());
+            Storage.saveDates(context, dates);
+            Log.w(TAG, "Dates after update"+ dates.getDates());
+            int notificationNumber = dates.getNotificationId(updated);
+            Log.w(TAG, "notification id "+ notificationNumber);
+
+        Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), notificationNumber);
 
 
 
