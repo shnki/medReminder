@@ -2,11 +2,11 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import {colors} from '../global';
+import {useTranslation} from 'react-i18next';
 
 export default function ({activeDays = [], onChange = () => null}) {
   // NOTICE: days doesn't change if prop activeDays changes
   const [days, setDays] = useState(activeDays);
-
   function onDayChange(dayIndex) {
     let selectedBtn = getSelected(days);
     selectedBtn[dayIndex] = !selectedBtn[dayIndex];
@@ -32,6 +32,8 @@ export default function ({activeDays = [], onChange = () => null}) {
 }
 
 function Day({isActive, dayIndex, onUpdate}) {
+  const {t, i18n} = useTranslation();
+
   return (
     <View style={{flex: 1}}>
       <TouchableOpacity
@@ -45,7 +47,7 @@ function Day({isActive, dayIndex, onUpdate}) {
             styles.text,
             isActive ? styles.selectedText : styles.unselectedText,
           ]}>
-          {getDay(dayIndex)}
+          {getDay(dayIndex, t)}
         </Text>
       </TouchableOpacity>
     </View>
@@ -68,8 +70,16 @@ export function getDays(selectedBtn) {
   return activeDays;
 }
 
-function getDay(number) {
-  let weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function getDay(number, t) {
+  let weekdays = [
+    t('Sun'),
+    t('Mon'),
+    t('Tue'),
+    t('Wed'),
+    t('Thu'),
+    t('Fri'),
+    t('Sat'),
+  ];
   return weekdays[number];
 }
 

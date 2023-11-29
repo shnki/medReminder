@@ -27,6 +27,7 @@ export const globalStyles = StyleSheet.create({
   alarmsContainer: {
     padding: 10,
   },
+
   title: {
     fontWeight: 'bold',
     fontSize: 20,
@@ -37,6 +38,13 @@ export const globalStyles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 10,
+  },
+  initialTimeContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     padding: 10,
   },
 });

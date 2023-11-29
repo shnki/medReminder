@@ -2,6 +2,7 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Dimensions} from 'react-native';
+import {useTranslation} from 'react-i18next';
 
 import {
   StyleSheet,
@@ -12,7 +13,6 @@ import {
   Alert,
 } from 'react-native';
 import {colors} from '../global';
-import Button from '../components/Button';
 import {getHourFromTimestamp, getMinuteFromTimestamp} from '../utils';
 
 export default function ({
@@ -53,13 +53,18 @@ export default function ({
   const {width} = Dimensions.get('window');
   const editIconSize = width / 10;
 
+  const {t} = useTranslation();
+  const oftenArr = [
+    'Every Day',
+    'Every Other Day',
+    'Specific Days of the week',
+    'Every X Days',
+  ];
   return (
     <TouchableOpacity onPress={createTwoButtonAlert} style={styles.container}>
       <View style={styles.leftInnerContainer}>
         <Text style={styles.clock}>{title}</Text>
-        {times.map((t, i) => (
-          <Text key={i}>{t}</Text>
-        ))}
+        <Text>{t(oftenArr[parseInt(often)])}</Text>
 
         <View style={styles.descContainer}>
           <Text>{getAlphabeticalDays(days)}</Text>
@@ -68,7 +73,7 @@ export default function ({
       <View style={styles.rightInnerContainer}>
         <Switch
           ios_backgroundColor={'black'}
-          trackColor={{false: colors.GREY, true: colors.BLUE}}
+          trackColor={{false: colors.GREY, true: colors.SLATE_BLUE}}
           value={isActive}
           onValueChange={onChange}
         />
@@ -96,6 +101,9 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flexDirection: 'row',
+    backgroundColor: 'rgba(210, 0, 255, 0.16)',
+    borderRadius: 5,
+    marginTop: 10,
   },
   leftInnerContainer: {
     margin: 5,

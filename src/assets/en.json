@@ -1,0 +1,16 @@
+{
+  "translation": {
+    "NEXT": "NEXT",
+    "Name of Medication": "Name of Medication",
+    "Description": "Description",
+    "Delete": "Delete",
+    "Save": "Save",
+    "cancel": "cancel",
+
+    "Please enter a name for your medication": "Please enter a name for your medication",
+    "Write a description to show what you are taking": "Write a description to show what you are taking",
+    "Pick Photo From Gallery": "Pick Photo From Gallery",
+    "Take Photo Using Camera": "Take Photo Using Camera",
+    "Choose an option": "Choose an option"
+  }
+}

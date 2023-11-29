@@ -2,6 +2,10 @@
 import React from 'react';
 import {TextInput, View, StyleSheet, Text} from 'react-native';
 import {colors} from '../global';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 export default function ({onChangeText, value, description, placeholder}) {
   return (
@@ -23,6 +27,7 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 5,
     marginBottom: 5,
+    width: '100%',
   },
   textInput: {
     borderWidth: 1,
@@ -33,6 +38,7 @@ const styles = StyleSheet.create({
     color: colors.BLACK,
     borderColor: colors.GREY,
     backgroundColor: colors.GREY,
+    width: wp('80%'),
     fontWeight: 'bold',
   },
   descriptionContainer: {

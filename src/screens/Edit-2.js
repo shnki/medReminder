@@ -10,13 +10,15 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import '../i18n';
+import {useTranslation} from 'react-i18next';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
   const [mode, setMode] = useState(null);
   const [isDaysPickerVisible, setDaysPickerVisible] = useState(false);
   const [isXDayPickerVisible, setXDayPickerVisible] = useState(false);
-
+  const {t, i18n} = useTranslation();
   const often = [
     'Every Day',
     'Every Other Day',
@@ -30,12 +32,29 @@ export default function ({route, navigation}) {
     'Four times a day',
   ];
 
+  const oftenOptions = often.map(option => t(option));
+  const oftenEnglishValues = [...often];
+
+  const specificDaysTranslation = t('Specific Days of the week');
+  const everyXDaysTranslation = t('Every X Days');
+
+  const howManyTimesOptions = howManyTimes.map(option => t(option));
+
+  const howManyTimesEnglishValues = [...howManyTimes];
+
   useEffect(() => {
     if (route.params && route.params.alarm) {
       setAlarm(route.params.alarm);
       setMode(route.params.mode);
       console.log('alarm in edit-2 :', route.params.alarm);
       console.log('mode in edit-2 :', route.params.mode);
+      if (route.params.mode === 'EDIT') {
+        navigation.setOptions({title: t('Edit reminder')});
+      }
+      if (route.params.mode === 'CREATE') {
+        navigation.setOptions({title: t('Add Reminder')});
+      }
+
       if (route.params.alarm.often === 2) {
         setDaysPickerVisible(true);
       }
@@ -57,28 +76,13 @@ export default function ({route, navigation}) {
     console.log('updated alarm: ', JSON.stringify(a));
   }
 
-  function getNextTimeTimeStamp(hour, minute) {
-    const now = new Date();
-    const nextTime = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      hour,
-      minute,
-    );
-    if (nextTime < now) {
-      nextTime.setDate(nextTime.getDate() + 1);
-    }
-    return Math.floor(nextTime.getTime() / 1000);
-  }
-
   if (!alarm) {
     return <View />;
   }
   return (
     <View style={globalStyles.periodicSelectContainer}>
       <View style={styles.oftenContainer}>
-        <Text style={globalStyles.title}>How often</Text>
+        <Text style={globalStyles.title}>{t('How often')}</Text>
         <SelectDropdown
           buttonStyle={{
             width: wp('90%'),
@@ -94,6 +98,7 @@ export default function ({route, navigation}) {
               setDaysPickerVisible(true);
             } else {
               setDaysPickerVisible(false);
+              update([['days', []]]);
             }
             if (selectedItem === 'Every X Days') {
               setXDayPickerVisible(true);
@@ -103,11 +108,11 @@ export default function ({route, navigation}) {
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
             return (
-              <Text style={{color: colors.SLATE_BLUE}}>{selectedItem}</Text>
+              <Text style={{color: colors.SLATE_BLUE}}>{t(selectedItem)}</Text>
             );
           }}
           rowTextForSelection={(item, index) => {
-            return item;
+            return t(item);
           }}
         />
         {isDaysPickerVisible && (
@@ -127,7 +132,7 @@ export default function ({route, navigation}) {
       </View>
 
       <View style={styles.manyContainer}>
-        <Text style={globalStyles.title}>How Many Times</Text>
+        <Text style={globalStyles.title}>{t('How Many Times')}</Text>
 
         <SelectDropdown
           buttonStyle={{
@@ -136,18 +141,18 @@ export default function ({route, navigation}) {
             backgroundColor: colors.GREY,
             borderRadius: 10,
           }}
-          defaultValue={alarm.many}
-          data={howManyTimes}
+          defaultValue={t(alarm.many)}
+          data={howManyTimesOptions}
           onSelect={(selectedItem, index) => {
-            update([['many', selectedItem]]);
+            update([['many', howManyTimesEnglishValues[index]]]);
           }}
           buttonTextAfterSelection={(selectedItem, index) => {
             return (
-              <Text style={{color: colors.SLATE_BLUE}}>{selectedItem}</Text>
+              <Text style={{color: colors.SLATE_BLUE}}>{t(selectedItem)}</Text>
             );
           }}
           rowTextForSelection={(item, index) => {
-            return item;
+            return t(item);
           }}
         />
       </View>
@@ -156,7 +161,7 @@ export default function ({route, navigation}) {
         onPress={() =>
           navigation.navigate('Edit-3', {alarm: alarm, mode: mode})
         }
-        title={'NEXT'}
+        title={t('NEXT')}
       />
     </View>
   );

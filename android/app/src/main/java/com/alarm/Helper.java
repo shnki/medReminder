@@ -52,7 +52,7 @@ class Helper {
         Log.d(TAG, "SDK version: " + Build.VERSION.SDK_INT);
         Log.d(TAG, "triggerAtMillis: "+triggerAtMillis);
 
-        Log.d(TAG, "scheduling alarm with notification id: " + unixTime);
+        Log.d(TAG, "scheduling alarm with notification id: " + notificationID);
         Log.d(TAG, "alarm scheduled to fire in " + (((float)(triggerAtMillis - System.currentTimeMillis())) / (1000 * 60)) + "min");
     }
 

@@ -2,12 +2,36 @@ import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import Alarm, {scheduleAlarm, updateAlarm} from '../alarm';
 import Button from '../components/Button';
-import TimePicker from '../components/timePicker';
+import Tp from '../components/TimePicker';
+// import TimePicker from '../components/timePicker';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
   const [mode, setMode] = useState(null);
   const [tempTimes, setTempTimes] = useState([]);
+
+  useEffect(() => {
+    if (route.params && route.params.alarm) {
+      setAlarm(route.params.alarm);
+      setMode(route.params.mode);
+      console.log('alarm in edit-4 :', route.params.alarm);
+      console.log('mode in edit-4:', route.params.mode);
+      navigation.setOptions({
+        title: route.params.mode,
+      });
+      const times = getHowManyTimesNum(route.params.alarm.many);
+      setTempTimes(
+        generateAlarmTimes(
+          route.params.alarm.initialHour,
+          route.params.alarm.initialMinute,
+          times,
+        ),
+      );
+    } else {
+      setAlarm(new Alarm());
+      setMode('CREATE');
+    }
+  }, []);
 
   function getNextTimeTimeStamp(hour, minute) {
     console.log('hour passed to the function: ', hour);
@@ -33,16 +57,6 @@ export default function ({route, navigation}) {
     return Math.floor(nextTime.getTime() / 1000);
   }
 
-  function getHourFromTimestamp(timestamp) {
-    const date = new Date(timestamp * 1000);
-    return date.getHours();
-  }
-
-  function getMinuteFromTimestamp(timestamp) {
-    const date = new Date(timestamp * 1000);
-    return date.getMinutes();
-  }
-
   function generateAlarmTimes(initialHour, initialMinute, numRings) {
     const alarmTimes = [];
     for (let i = 0; i < numRings; i++) {
@@ -56,13 +70,34 @@ export default function ({route, navigation}) {
     return alarmTimes;
   }
 
-  function update(updates) {
+  async function update() {
+    const newTimes = [];
+
+    for (let i = 0; i < tempTimes.length; i++) {
+      console.log(`this tempTimes from button ${JSON.stringify(tempTimes)}`);
+      newTimes.push(
+        getNextTimeTimeStamp(tempTimes[i].hour, tempTimes[i].minutes),
+      );
+    }
+
+    const updates = [['times', newTimes]];
+
     const a = Object.assign({}, alarm);
     for (let u of updates) {
       a[u[0]] = u[1];
     }
-    setAlarm(a);
-    console.log('updated alarm: ', JSON.stringify(a));
+    //setAlarm(a);
+
+    console.log('updated alarm:  a ', JSON.stringify(a));
+    if (mode === 'EDIT') {
+      a.active = true;
+      await updateAlarm(a);
+    }
+    if (mode === 'CREATE') {
+      await scheduleAlarm(a);
+      console.log('created alarm: a ', JSON.stringify(a));
+    }
+    navigation.navigate('Alarms');
   }
   function getHowManyTimesNum(many) {
     if (many == 'Once a day') {
@@ -75,7 +110,28 @@ export default function ({route, navigation}) {
       return 4;
     }
   }
-  async function onSave(obj) {
+
+  async function updateTimes() {
+    const newTimes = [];
+
+    for (let i = 0; i < tempTimes.length; i++) {
+      newTimes.push(
+        getNextTimeTimeStamp(tempTimes[i].hour, tempTimes[i].minutes),
+      );
+    }
+    await update([['times', newTimes]]);
+    console.log(
+      'alarm times after updated in updateTimes()',
+      JSON.stringify(alarm.times),
+    );
+
+    console.log(
+      `this tempTimes from updateTimes() ${JSON.stringify(tempTimes)}`,
+    );
+  }
+  async function onSave() {
+    await updateTimes();
+
     if (mode === 'EDIT') {
       alarm.active = true;
       await updateAlarm(alarm);
@@ -87,25 +143,18 @@ export default function ({route, navigation}) {
     navigation.navigate('Alarms');
   }
 
-  useEffect(() => {
-    if (route.params && route.params.alarm) {
-      setAlarm(route.params.alarm);
-      setMode(route.params.mode);
-      console.log('alarm in edit-4 :', route.params.alarm);
-      console.log('mode in edit-4:', route.params.mode);
-      const times = getHowManyTimesNum(route.params.alarm.many);
-      setTempTimes(
-        generateAlarmTimes(
-          route.params.alarm.initialHour,
-          route.params.alarm.initialMinute,
-          times,
-        ),
+  const zopr = () => {
+    const newTimes = [];
+
+    for (let i = 0; i < tempTimes.length; i++) {
+      console.log(`this tempTimes from button ${JSON.stringify(tempTimes)}`);
+      newTimes.push(
+        getNextTimeTimeStamp(tempTimes[i].hour, tempTimes[i].minutes),
       );
-    } else {
-      setAlarm(new Alarm());
-      setMode('CREATE');
     }
-  }, []);
+    update([['times', newTimes]]);
+    console.log(JSON.stringify(alarm.times));
+  };
 
   if (!alarm) {
     return <View />;
@@ -113,7 +162,7 @@ export default function ({route, navigation}) {
   return (
     <View>
       {tempTimes.map((t, i) => (
-        <TimePicker
+        <Tp
           key={i}
           onChange={(h, m) => {
             tempTimes[i] = {hour: h, minutes: m};
@@ -123,43 +172,8 @@ export default function ({route, navigation}) {
           minutes={t.minutes}
         />
       ))}
-      {/* <TimePicker
-        onChange={(h, m) => console.log(getNextTimeTimeStamp(h, m))}
-        hour={alarm.hour}
-        minutes={alarm.minutes}
-      /> */}
 
-      <Button
-        fill={true}
-        onPress={() => console.log(JSON.stringify(alarm))}
-        title={'print alarm'}
-      />
-      <Button
-        fill={true}
-        onPress={() => console.log(JSON.stringify(tempTimes))}
-        title={'print tempTimes'}
-      />
-      <Button
-        fill={true}
-        onPress={() => console.log(JSON.stringify(alarm.times))}
-        title={'print times'}
-      />
-      <Button
-        fill={true}
-        onPress={() => {
-          const newTimes = [];
-
-          for (let i = 0; i < tempTimes.length; i++) {
-            newTimes.push(
-              getNextTimeTimeStamp(tempTimes[i].hour, tempTimes[i].minutes),
-            );
-          }
-          update([['times', newTimes]]);
-          console.log(JSON.stringify(alarm.times));
-        }}
-        title={'add times to alarmObj times'}
-      />
-      <Button fill={true} onPress={onSave} title={'Save'} />
+      <Button fill={true} onPress={update} title={'Save'} />
     </View>
   );
 }

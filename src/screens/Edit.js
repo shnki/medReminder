@@ -1,13 +1,14 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
+import '../i18n';
+import {useTranslation} from 'react-i18next';
 import {
   StyleSheet,
   View,
   Image,
   Keyboard,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import Alarm, {removeAlarm, scheduleAlarm, updateAlarm} from '../alarm';
 import TextInput from '../components/TextInput';
@@ -19,17 +20,26 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import ImagePickerOverlay from '../components/ImagePickerOverlay';
+import {color} from 'react-native-reanimated';
+import {colors} from 'react-native-elements';
 
 export default function ({route, navigation}) {
   const [alarm, setAlarm] = useState(null);
   const [mode, setMode] = useState(null);
   const [imageUri, setImageUri] = useState(null);
+  const [showOverlay, setShowOverlay] = useState(false);
+
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const {t} = useTranslation();
 
   useEffect(() => {
+    let keyboardDidShowListener;
+    let keyboardDidHideListener;
     if (route.params && route.params.alarm) {
       setAlarm(new Alarm(route.params.alarm));
       setMode('EDIT');
+      navigation.setOptions({title: t('Edit reminder')});
       console.log('alarm is on create :', route.params.alarm);
       if (route.params.alarm.uri != null) {
         setImageUri(route.params.alarm.uri);
@@ -37,15 +47,30 @@ export default function ({route, navigation}) {
     } else {
       setAlarm(new Alarm());
       setMode('CREATE');
+      navigation.setOptions({title: t('Add Reminder')});
     }
 
-    Keyboard.addListener('keyboardDidShow', () => {
+    keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
       setKeyboardVisible(true);
     });
-    Keyboard.addListener('keyboardDidHide', () => {
+    keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
       setKeyboardVisible(false);
     });
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
   }, []);
+
+  const handleOption1 = () => {
+    choosePhoto();
+    setShowOverlay(false);
+  };
+
+  const handleOption2 = () => {
+    takePhoto();
+    setShowOverlay(false);
+  };
 
   function update(updates) {
     const a = Object.assign({}, alarm);
@@ -74,68 +99,30 @@ export default function ({route, navigation}) {
 
   async function takePhoto() {
     const result = await launchCamera({mediaType: 'photo'});
-    if (result) {
-      setImageUri(result.assets[0].uri);
-      console.log('result', result);
-      console.log('uri', result.assets[0].uri);
-      console.log('imageUri', imageUri);
-      await savePhotoToHiddenFolder(result.assets[0].originalPath);
+    if (result.assets && result.assets.length > 0) {
+      const photoUri = result.assets[0].uri;
+      await savePhotoToHiddenFolder(result.assets[0].originalPath, photoUri);
     }
   }
-
-  const createTwoButtonAlert = () =>
-    Alert.alert(
-      `Use an image of your medication`,
-      'Choose an option to proceed',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {
-          text: 'Pick Photo From Gallery',
-          onPress: () => choosePhoto(),
-        },
-        {text: 'Take Photo Using Camera', onPress: () => takePhoto()},
-      ],
-    );
 
   async function choosePhoto() {
     const result = await launchImageLibrary({mediaType: 'photo'});
-    if (result) {
-      setImageUri(result.assets[0].uri);
-      console.log('result', result);
-      console.log('uri', result.assets[0].uri);
-      console.log('imageUri', imageUri);
-      await savePhotoToHiddenFolder(result.assets[0].uri);
+    if (result.assets && result.assets.length > 0) {
+      const photoUri = result.assets[0].uri;
+      await savePhotoToHiddenFolder(result.assets[0].uri, photoUri);
     }
   }
 
-  const savePhotoToHiddenFolder = async photoUri => {
+  const savePhotoToHiddenFolder = async (photoUri, actualUri) => {
     try {
-      // Create a hidden directory in your app's documents folder
       const hiddenDirPath = `${RNFS.DocumentDirectoryPath}/.hidden_photos`;
       await RNFS.mkdir(hiddenDirPath);
-
-      // Get the photo's filename from the URI
       const photoFileName = photoUri.substring(photoUri.lastIndexOf('/') + 1);
-
-      // Construct the destination path for the hidden photo
       const destinationPath = `${hiddenDirPath}/${photoFileName}`;
-
-      // Move the photo from its current location to the hidden folder
-      await RNFS.moveFile(photoUri, destinationPath);
-
-      // Optionally, you can delete the original file if you don't need it anymore
-
-      // If you want to access the hidden photo in your app, you can use 'destinationPath'
-
-      // If you want to hide it from the Camera Roll, you can use CameraRoll's 'deletePhotos' function
-      // await CameraRoll.deletePhotos([photoUri]);
-
-      console.log('Photo saved to hidden folder:', destinationPath);
-      alarm.uri = 'file://' + destinationPath;
+      await RNFS.moveFile(actualUri, destinationPath);
+      setImageUri('file://' + destinationPath);
+      const updatedAlarm = {...alarm, uri: 'file://' + destinationPath};
+      setAlarm(updatedAlarm);
     } catch (error) {
       console.error('Error saving photo:', error);
     }
@@ -147,45 +134,55 @@ export default function ({route, navigation}) {
 
   return (
     <View style={globalStyles.container}>
+      <ImagePickerOverlay
+        isVisible={showOverlay}
+        onClose={() => setShowOverlay(false)}
+        onOption1Press={handleOption1}
+        onOption2Press={handleOption2}
+        optionOneText={t('Pick Photo From Gallery')}
+        optionTwoText={t('Take Photo Using Camera')}
+      />
       <View style={[globalStyles.innerContainer, styles.container]}>
-        <TouchableOpacity onPress={createTwoButtonAlert}>
-          {!isKeyboardVisible && (
+        <TouchableOpacity onPress={() => setShowOverlay(true)}>
+          {!isKeyboardVisible && imageUri && (
             <Image
-              source={
-                imageUri
-                  ? {uri: imageUri}
-                  : require('../assets/DefaultImage.png')
-              }
+              source={{uri: imageUri}}
               style={{width: wp('70%'), height: hp('40%')}}
               onError={error => {
                 console.log(error);
               }}
             />
           )}
+          {!isKeyboardVisible && !imageUri && (
+            <Image
+              source={require('../assets/DefaultImage.png')}
+              style={{width: wp('70%'), height: hp('40%')}}
+            />
+          )}
         </TouchableOpacity>
         <View styles={styles.inputsContainer}>
           <TextInput
-            description={'Name of Medication'}
-            style={styles.textInput}
+            description={t('Name of Medication')}
             onChangeText={v => {
               update([['title', v]]);
             }}
             value={alarm.title ?? alarm.title}
-            placeholder={'Name of Medication'}
+            placeholder={t('Name of Medication')}
           />
           <TextInput
-            description={'Description'}
-            style={styles.textInput}
+            description={t('Description')}
             onChangeText={v => update([['description', v]])}
             value={alarm.description ?? alarm.description}
-            placeholder={'Write a description to show what you are taking'}
+            placeholder={t('Write a description to show what you are taking')}
           />
         </View>
         {!isKeyboardVisible && (
           <View style={styles.buttonContainer}>
-            {mode === 'EDIT' && <Button onPress={onDelete} title={'Delete'} />}
             {mode === 'EDIT' && (
-              <Button fill={true} onPress={onSave} title={'Save'} />
+              <Button onPress={onDelete} title={t('Delete')} />
+            )}
+            {mode === 'EDIT' && (
+              <Button fill={true} onPress={onSave} title={t('Save')} />
             )}
             <Button
               fill={true}
@@ -194,10 +191,10 @@ export default function ({route, navigation}) {
                 if (alarm.title.trim() !== '') {
                   navigation.navigate('Edit-2', {alarm: alarm, mode: mode});
                 } else {
-                  alert('Please enter a name for your medication');
+                  alert(t('Please enter a name for your medication'));
                 }
               }}
-              title={'NEXT'}
+              title={t('NEXT')}
             />
           </View>
         )}
@@ -211,9 +208,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     height: '100%',
-  },
-  inputsContainer: {
-    width: '100%',
   },
   buttonContainer: {
     display: 'flex',
