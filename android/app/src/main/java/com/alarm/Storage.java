@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.rnalarm.R;
+import com.medreminder.R;
 import com.google.gson.Gson;
 
 import java.text.ParseException;

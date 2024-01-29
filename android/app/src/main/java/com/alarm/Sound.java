@@ -144,7 +144,7 @@ class Sound {
             soundUri = Settings.System.DEFAULT_RINGTONE_URI;
         } else {
 
-            soundUri = Uri.parse("file:///data/data/com.rnalarm/files/"+soundName+".mp3");
+            soundUri = Uri.parse("file:///data/data/com.medreminder/files/"+soundName+".mp3");
                     //Uri.parse("android.resource://" + context.getPackageName() + "/" + resId);
         }
         return soundUri;

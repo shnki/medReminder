@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import com.alarm.receivers.AlarmReceiver;
 import com.alarm.receivers.DismissReceiver;
-import com.rnalarm.R;
+import com.medreminder.R;
 
 import java.util.Calendar;
 

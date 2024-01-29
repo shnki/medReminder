@@ -6,7 +6,7 @@ import android.speech.tts.Voice;
 import android.util.Log;
 import android.content.SharedPreferences;
 
-import com.rnalarm.R;
+import com.medreminder.R;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -180,7 +180,7 @@ public class Manager {
             Storage.updateAlarmTimes(context,alarm.uid,(int)AlarmDates.toUnixTimeStamp(current),(int)AlarmDates.toUnixTimeStamp(updated));
             Storage.saveDates(context, dates);
             Log.w(TAG, "Dates after update"+ dates.getDates());
-            int notificationNumber = dates.getNotificationId(updated);
+            int notificationNumber = dates.getNotificationId(updated) + generateUniqueID() ;
             Log.w(TAG, "notification id "+ notificationNumber);
 
         Helper.scheduleAlarm(context, dates.alarmUid, updated.getTime(), notificationNumber);

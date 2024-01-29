@@ -37,7 +37,8 @@ export default function ({route, navigation}) {
       <View style={[globalStyles.innerContainer, styles.container]}>
         <View style={styles.textContainer}>
           <Text style={styles.clockText}>
-            {nowHour} : {nowMinutes}
+            {nowHour < 10 ? `0${nowHour}` : nowHour} :{' '}
+            {nowMinutes > 10 ? nowMinutes : `0${nowMinutes}`}
           </Text>
           <Text style={styles.title}>{alarm.title}</Text>
           <Image
